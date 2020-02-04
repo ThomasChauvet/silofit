@@ -35,7 +35,7 @@
     </body> 
 	<script>
 		function getRandomColor() {
-			return "#"+Math.floor(Math.random() * 0x1000000).toString(16).padStart(6, 0)
+			return "#" + ('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6);
 		}
 		
 		function generateCircle(useRandomColor) {
@@ -52,9 +52,12 @@
 		}
 		
 		function split(elmt) {
-			elmt.style.backgroundColor = null;
-			elmt.innerHTML = generateContainer(4, true);
+			// Drop former element background color
+			elmt.removeAttribute('style');
+			// Disable parent element hovering
 			elmt.onmouseover = null;
+			// Generate split circles
+			elmt.innerHTML = generateContainer(4, true);
 		}
 		
 		document.getElementById("content").innerHTML = generateContainer(2, false);
