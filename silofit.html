@@ -1,0 +1,62 @@
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta name="viewport" content="width=device-width,  
+        initial-scale=1"> 
+        <style>
+			.wrapper {
+				position: relative;
+				width: 100%;
+			}
+			.content {
+			  position: absolute;
+			  top: 0;  bottom: 0;  left: 0;  right: 0;
+			}
+			.container {
+			  display: flex;
+			  flex-flow: row wrap;
+			  height: 100%;
+			}
+            .aspect-ratio-box {
+			  padding-bottom: 50%;
+			  background: black;
+			}
+			.box-flex {
+			  flex-basis: 50%;
+			  border-radius: 50%;
+			} 
+        </style> 
+        </head> 
+    <body> 
+		<div class="wrapper">
+			<div class="aspect-ratio-box"></div>
+			<div class="content" id="content"></div> 
+        </div> 
+    </body> 
+	<script>
+		function getRandomColor() {
+			return "#"+Math.floor(Math.random() * 0x1000000).toString(16).padStart(6, 0)
+		}
+		
+		function generateCircle(useRandomColor) {
+			return '<div class="box-flex" style="background-color: ' + (useRandomColor ? getRandomColor() : 'white') + '" onmouseover="split(this);"></div>';
+		}
+		
+		function generateContainer(nbElements, useRandomColor) {
+			var container = '<div class="container">';
+			for(i=0; i < nbElements; i++) {
+				container += generateCircle(useRandomColor);
+			}
+			container += '</div>';
+			return container;
+		}
+		
+		function split(elmt) {
+			elmt.style.backgroundColor = null;
+			elmt.innerHTML = generateContainer(4, true);
+			elmt.onmouseover = null;
+		}
+		
+		document.getElementById("content").innerHTML = generateContainer(2, false);
+	</script>
+</html> 
