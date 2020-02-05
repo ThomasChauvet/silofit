@@ -1,7 +1,11 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
 .App-link {
-  color: #61dafb;
+    color: #61dafb;
+}
+
+button.inline-button {
+    margin-left: 1em;
 }

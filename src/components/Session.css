@@ -1,0 +1,24 @@
+.session-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 2em;
+    border: 1px solid darkgrey;
+}
+
+.session-description {
+    flex-basis: 100%;
+    background-color: white;
+    margin: 0;
+    padding: 1em;
+    border: 1px solid darkgrey;
+}
+
+.session-attendees {
+    flex-basis: 50%;
+}
+
+.session-access-code {
+    flex-basis: 50%;
+    align-self: stretch;
+}

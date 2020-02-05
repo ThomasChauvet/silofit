@@ -1,0 +1,23 @@
+.access-code-wrapper {
+    border: 1px solid darkgrey;
+    box-sizing: border-box;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.access-code-wrapper > div {
+    flex-basis: 100%;
+}
+
+.access-code-ok {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: green;
+}
+
+.access-code-restricted {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: red;
+}
