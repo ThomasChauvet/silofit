@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { callFirebaseFunction } from '../services/FirebaseService';
-import { RingLoader } from 'react-spinners';
+import { Loader } from './Loader';
 import EmailUtils from '../utils/EmailUtils';
 
 export const Registration: React.FC = () => {
@@ -59,7 +59,7 @@ export const Registration: React.FC = () => {
             <div>Please enter your work email address and we'll send you an email to book seessions at Silofit</div>
             <input name="email" value={email} type="email" onChange={onUpdateEmail} disabled={loading}></input>
             <button disabled={loading}>Send me my access link</button>
-            <RingLoader css={'margin: 1em auto;'} size={60} color={'#ce9b6c'} loading={loading} />
+            <Loader loading={loading} />
             {link && (
                 <div className="alert alert-info" role="alert">
                     The link was successfully generated: {link}

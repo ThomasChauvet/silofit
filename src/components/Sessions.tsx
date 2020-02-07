@@ -4,7 +4,7 @@ import { Session } from './Session';
 import { RouteChildrenProps, Link } from 'react-router-dom';
 import './Sessions.css';
 import { callFirebaseFunction } from '../services/FirebaseService';
-import { RingLoader } from 'react-spinners';
+import { Loader } from './Loader';
 
 export const Sessions: React.FC<RouteChildrenProps<{ userId?: string }>> = props => {
     const [sessions, setSessions] = useState<ISession[]>([]);
@@ -79,7 +79,7 @@ export const Sessions: React.FC<RouteChildrenProps<{ userId?: string }>> = props
 
     return (
         <div className="main-sessions-body">
-            <RingLoader css={'margin: 1em auto;'} size={60} color={'#ce9b6c'} loading={loading} />
+            <Loader loading={loading} />
             {!loading && !user && (
                 <div className="no-user-sessions">
                     This link is invalid, please <Link to="/">Register</Link> before trying to book a session.
