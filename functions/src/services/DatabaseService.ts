@@ -3,6 +3,7 @@ import { IUser, IDbUser } from '../models/User';
 import { appDB } from './FirebaseService';
 import { ISlot } from '../models/Slot';
 import EmailUtils from '../utils/EmailUtils';
+import { IDbSession, ISession } from '../models/Session';
 
 export const DOMAINS_REF = 'domains';
 export const USERS_REF = 'users';
@@ -17,7 +18,7 @@ class DatabaseService {
         };
     };
 
-    public getDomainFromName = async (domainName: string): Promise<IDbDomain | null> => {
+    public getDomainByName = async (domainName: string): Promise<IDbDomain | null> => {
         let domain: IDbDomain | null = null;
         await appDB
             .ref(DOMAINS_REF)
@@ -26,11 +27,7 @@ class DatabaseService {
             .limitToFirst(1)
             .once('value', snapshot => {
                 if (snapshot.exists()) {
-                    console.log(`Domain ${domainName} found`);
                     domain = this.getKeyValueObject<IDomain>(snapshot.val());
-                    console.log(`Domain ${domainName} found: ${domain}`);
-                } else {
-                    console.log(`Domain ${domainName} not found`);
                 }
             });
         return domain;
@@ -41,7 +38,7 @@ class DatabaseService {
         return entry.key as string;
     };
 
-    public getDomainFromUserKey = async (userKey: string): Promise<IDbDomain | null> => {
+    public getDomainByUserKey = async (userKey: string): Promise<IDbDomain | null> => {
         // Fetch user to get domain from email address
         const dbUser = await this.getUserByKey(userKey);
         // User not found? Nothing to return
@@ -49,11 +46,10 @@ class DatabaseService {
             return null;
         }
 
-        return await this.getDomainFromName(EmailUtils.getDomain(dbUser.value.email));
+        return await this.getDomainByName(EmailUtils.getDomain(dbUser.value.email));
     };
 
     public addSlot = async (domainKey: string, slot: ISlot): Promise<string> => {
-        console.log(`Adding slot ${slot} to domain ${domainKey}`);
         const entry = await appDB
             .ref(DOMAINS_REF)
             .child(domainKey)
@@ -99,6 +95,38 @@ class DatabaseService {
     public addUser = async (user: IUser): Promise<string> => {
         const entry = await appDB.ref(USERS_REF).push(user);
         return entry.key as string;
+    };
+
+    public getSession = async (domainKey: string, sessionKey: string): Promise<IDbSession | null> => {
+        let session: IDbSession | null = null;
+        // Check if the session already exists
+        await appDB
+            .ref(DOMAINS_REF)
+            .child(domainKey)
+            .child(SESSIONS_REF)
+            .orderByKey()
+            .equalTo(sessionKey)
+            .once('value', snapshot => {
+                if (snapshot.exists()) {
+                    session = this.getKeyValueObject<ISession>(snapshot.val());
+                }
+            });
+
+        return session;
+    };
+
+    public updateSession = async (domainKey: string, sessionKey: string, session: ISession): Promise<IDbSession> => {
+        await appDB
+            .ref(DOMAINS_REF)
+            .child(domainKey)
+            .child(SESSIONS_REF)
+            .child(sessionKey)
+            .set(session);
+
+        return {
+            key: sessionKey,
+            value: session,
+        };
     };
 }
 

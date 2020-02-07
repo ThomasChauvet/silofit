@@ -2,9 +2,7 @@
  * Scheduled session model
  */
 export interface ISession {
-    // Company domain
-    domain: string;
-    // Session date (YYYYMMDD) format
+    // Session date (YYYY-MM-DD) format
     date: string;
     // Start time
     start: string;
@@ -16,4 +14,9 @@ export interface ISession {
     maxAttendees: number;
     // List of registered attendees (includes the ones on the waitlist)
     attendees?: string[];
+}
+
+export interface IDbSession {
+    key: string;
+    value: ISession;
 }
