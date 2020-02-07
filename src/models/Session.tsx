@@ -4,5 +4,10 @@ export interface ISession {
     end: string;
     maxAttendees: number;
     code?: string;
-    attendees: string[];
+    attendees?: string[];
+}
+
+export interface IDbSession {
+    key: string;
+    value: ISession;
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ISession } from '../models/Session';
+import { IDbSession } from '../models/Session';
 import { Session } from './Session';
 import { RouteChildrenProps, Link } from 'react-router-dom';
 import './Sessions.css';
@@ -7,62 +7,31 @@ import { callFirebaseFunction } from '../services/FirebaseService';
 import { Loader } from './Loader';
 
 export const Sessions: React.FC<RouteChildrenProps<{ userId?: string }>> = props => {
-    const [sessions, setSessions] = useState<ISession[]>([]);
+    const [sessions, setSessions] = useState<IDbSession[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        fetchSessions();
-    });
-
-    const fetchSessions = async () => {
-        // TODO: fetch from cloud function
-        setSessions([
-            {
-                date: 'some day in 2020',
-                start: '11:30am',
-                end: '1:30pm',
-                maxAttendees: 3,
-                code: 'ABC456',
-                attendees: ['someone1@gmail.com'],
-            },
-            {
-                date: 'some other day in 2020',
-                start: '11h30',
-                end: '13h30',
-                maxAttendees: 3,
-                code: 'ABC123',
-                attendees: ['someone1@gmail.com', 'test@gmail.com'],
-            },
-            {
-                date: 'yet another day in 2020',
-                start: '11h30',
-                end: '13h30',
-                maxAttendees: 3,
-                attendees: ['someone1@gmail.com', 'someone2@gmail.com', 'someone3@gmail.com', 'someone4@gmail.com'],
-            },
-            {
-                date: "let's keep rolling",
-                start: '11h30',
-                end: '13h30',
-                maxAttendees: 3,
-                attendees: [
-                    'someone1@gmail.com',
-                    'someone2@gmail.com',
-                    'someone3@gmail.com',
-                    'someone4@gmail.com',
-                    'test@gmail.com',
-                    'someone5@gmail.com',
-                    'someone6@gmail.com',
-                ],
-            },
-        ]);
-    };
+        try {
+            callFirebaseFunction('getSessions', { userId: props.match?.params.userId })
+                .then(dbSessions => {
+                    setSessions(dbSessions);
+                    setLoading(false);
+                })
+                .catch(e => {
+                    console.error(e);
+                    setLoading(false);
+                });
+        } catch (e) {
+            console.error(e);
+            setLoading(false);
+        }
+    }, []);
 
     const [user, setUser] = useState();
 
     useEffect(() => {
         try {
-            callFirebaseFunction('getUser', props.match?.params.userId as string)
+            callFirebaseFunction('getUser', { userId: props.match?.params.userId })
                 .then(dbUser => {
                     setUser(dbUser);
                     setLoading(false);

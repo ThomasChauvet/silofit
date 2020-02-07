@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { IUser } from '../models/User';
 import './AccessCode.css';
-import { ISession } from '../models/Session';
+import { IDbSession } from '../models/Session';
 
 interface IAccessCodeProps {
-    session: ISession;
+    session: IDbSession;
     user: IUser;
 }
 
@@ -18,10 +18,10 @@ export const AccessCode: React.FC<IAccessCodeProps> = props => {
 
     useEffect(() => {
         // If an access code is available, check if the user is an attendee
-        const code = props.session.code;
+        const code = props.session.value.code;
         if (code) {
             setAccessCode(
-                props.session.attendees.includes(props.user.email)
+                (props.session.value.attendees || []).includes(props.user.email)
                     ? { displayCode: code, extraClassName: 'access-code-ok' }
                     : { displayCode: 'only for attendees', extraClassName: 'access-code-restricted' },
             );
@@ -33,6 +33,7 @@ export const AccessCode: React.FC<IAccessCodeProps> = props => {
     return (
         <div className="access-code-wrapper">
             <div className={accessCode.extraClassName}>Access Code: {accessCode.displayCode.toUpperCase()}</div>
+            {!accessCode && props.user.isAdmin && <button>Generate Access Code</button>}
         </div>
     );
 };

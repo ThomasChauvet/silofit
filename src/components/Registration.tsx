@@ -5,8 +5,8 @@ import EmailUtils from '../utils/EmailUtils';
 
 export const Registration: React.FC = () => {
     const [email, setEmail] = useState<string>('');
+    const [submitSuccess, setSubmitSuccess] = useState<Boolean>();
     const [error, setError] = useState<String>('');
-    const [link, setLink] = useState<string>();
     const [loading, setLoading] = useState<boolean>(false);
 
     /**
@@ -18,7 +18,7 @@ export const Registration: React.FC = () => {
         setError('');
 
         if (validateForm()) {
-            await submitForm();
+            setSubmitSuccess(await submitForm());
         }
     };
 
@@ -42,7 +42,7 @@ export const Registration: React.FC = () => {
     const submitForm = async (): Promise<boolean> => {
         try {
             setLoading(true);
-            setLink(await callFirebaseFunction('generateLink', email));
+            await callFirebaseFunction('generateLink', { email });
             setLoading(false);
             return true;
         } catch (e) {
@@ -60,9 +60,9 @@ export const Registration: React.FC = () => {
             <input name="email" value={email} type="email" onChange={onUpdateEmail} disabled={loading}></input>
             <button disabled={loading}>Send me my access link</button>
             <Loader loading={loading} />
-            {link && (
+            {submitSuccess && error === '' && (
                 <div className="alert alert-info" role="alert">
-                    The link was successfully generated: {link}
+                    An email containing the link to log into the application was sent to {email}
                 </div>
             )}
             {error !== '' && (

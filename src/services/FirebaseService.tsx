@@ -8,14 +8,18 @@ export const fetchConfig = async () => {
     return result.json();
 };
 
-export const callFirebaseFunction = async (funcName: string, ...funcArgs: any[]) => {
-    // Init firebase app if necessary
-    if (firebase.apps.length === 0) {
-        const config = await fetchConfig();
-        firebase.initializeApp(config);
+export const callFirebaseFunction = async (funcName: string, data: { [key: string]: any }) => {
+    // TODO: Fixme, this is dead ugly
+    // Cannot get react contexts to work at the moment, so a connection is initialized for each component where necessary
+    try {
+        // Init firebase app if necessary
+        if (firebase.apps.length === 0) {
+            const config = await fetchConfig();
+            firebase.initializeApp(config);
+        }
+    } catch (e) {
+        // Do nothing
     }
-    firebase.functions().useFunctionsEmulator('http://localhost:5001');
-    const result = await firebase.functions().httpsCallable(funcName)(...funcArgs);
-    console.log(result);
+    const result = await firebase.functions().httpsCallable(funcName)(data);
     return result.data;
 };
