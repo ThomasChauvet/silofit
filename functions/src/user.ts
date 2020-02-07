@@ -1,7 +1,7 @@
 import databaseService from './services/DatabaseService';
 import EmailUtils from './utils/EmailUtils';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { sendLink } from './services/MailgunService';
+import { sendLink } from './services/EmailService';
 
 export const addUser = async (data: { email: string }) => {
     if (!data.email) {
@@ -34,7 +34,7 @@ export const addUser = async (data: { email: string }) => {
         }
         // Send email
         try {
-            await sendLink(data.email, key);
+            sendLink(data.email, key);
             return 'ok';
         } catch (e) {
             console.log(e);
