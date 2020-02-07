@@ -1,0 +1,22 @@
+{
+    "rules": {
+        "domains": {
+            "$domainId": {
+                ".indexOn": ["domain"],
+                "slots": {
+                    ".indexOn": ["day"]
+                }
+            }
+        },
+        "users": {
+            "$userId": {
+                ".indexOn": ["email"]
+            }
+        },
+        "sessions": {
+            "$sessionId": {
+                ".indexOn": ["domain", "date"]
+            }
+        }
+    }
+}

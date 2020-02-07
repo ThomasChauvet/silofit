@@ -5,16 +5,18 @@ import { AppHeader } from './components/AppHeader';
 import { Registration } from './components/Registration';
 import { Sessions } from './components/Sessions';
 
-const App: React.FC = () => (
-    <div className="App">
-        <Router>
-            <AppHeader />
-            <Switch>
-                <Route path="/" exact component={Registration} />
-                <Route path="/:userId" exact component={Sessions} />
-            </Switch>
-        </Router>
-    </div>
-);
+const App: React.FC = () => {
+    return (
+        <div className="App">
+            <Router>
+                <AppHeader />
+                <Switch>
+                    <Route path="/" exact component={Registration} />
+                    <Route path="/:userId" exact component={Sessions} />
+                </Switch>
+            </Router>
+        </div>
+    );
+};
 
 export default App;
