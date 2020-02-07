@@ -2,8 +2,8 @@ import * as mailgun from 'mailgun-js';
 import * as functions from 'firebase-functions';
 import { hostedAppLink } from './FirebaseService';
 
-const DOMAIN = functions.config().mailgun.api.domain;
-const mg = mailgun({ apiKey: functions.config().mailgun.api.key, domain: DOMAIN });
+const DOMAIN = functions.config().mailgun.domain;
+const mg = mailgun({ apiKey: functions.config().mailgun.key, domain: DOMAIN });
 
 export const sendLink = (email: string, userKey: string): Promise<mailgun.messages.SendResponse> => {
     const link = `${hostedAppLink}/${userKey}`;

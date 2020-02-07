@@ -37,6 +37,7 @@ export const addUser = async (data: { email: string }) => {
             await sendLink(data.email, key);
             return 'ok';
         } catch (e) {
+            console.log(e);
             throw new HttpsError('internal', `Email server is unavailable at the moment`);
         }
     }
