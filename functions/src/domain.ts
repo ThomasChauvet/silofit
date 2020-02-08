@@ -12,12 +12,10 @@ export const registerDomain = async (req: functions.https.Request, res: function
     // Check if the domain is already registered
     const existingDomain = await databaseService.getDomainByName(domain);
     if (existingDomain) {
-        console.log(`Domain ${domain} is already registered`);
         res.status(400).send(`Domain ${domain} is already registered`);
         return;
     }
 
-    console.log(`Registering Domain ${domain}`);
     const domainKey = await databaseService.addDomain({ domain });
     // TODO: Implement a full slot management functions set
     // Just use the ones describe in the exercise for now

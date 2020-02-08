@@ -47,7 +47,7 @@ export const Registration: React.FC = () => {
 
     return (
         <form onSubmit={handleSubmit} noValidate={true}>
-            <div>Please enter your work email address and we'll send you an email to book seessions at Silofit</div>
+            <div>Please enter your work email address and we'll send you an email to book sessions at Silofit</div>
             <input name="email" value={email} type="email" onChange={onUpdateEmail} disabled={loading}></input>
             <button disabled={loading}>Send me my access link</button>
             <Loader loading={loading} />

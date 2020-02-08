@@ -1,68 +1,53 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Application description
 
-## Available Scripts
+-   The application is available at https://silofit-back.firebaseapp.com
 
-In the project directory, you can run:
+-   The application supports multiple domains. Currently, only gmail.com is registered, but feel free to register more domains by calling the http functions https://us-central1-silofit-back.cloudfunctions.net/registerDomain?domain=_XXX.com_
 
-### `yarn start`
+-   The available weekly slots definitions are actually dynamic, even though currently all registered domains will use the definitions provided in the exercice description; this would allow for a future management API (not implemented at the moment).
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+-   Sessions for a specific domain are created on the fly whenever a user from the domain logs in. They are retrieved (and generated if necessary) based on the domain's slots definitions for the upcoming month.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+-   Currently, all users with an email address containing _+admin_ are considered admins.
 
-### `yarn test`
+-   Access codes are generated directly from the application, using the _Generate access code_ button with an admin account.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+-   The waitlist for a given session is calculated on the fly, meaning that it can be adjusted real-time just by changing the _maxAttendees_ value for a given session.
 
-### `yarn build`
+## Things to improve
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+-   At the moment, I have an odd behavior in the front-end that I was not able to fix: only 1 session action button can be clicked, after which no button is active any longer (the onClick event does not even get called and the page freezes). Right now, I implemented an ugly hack which consists in a full page refresh, which is definitely not what we want to see. I suspect that this is probably due to the organisation of my react components.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+-   I am not entirely happy with the models for the functions. In a "real life" scenario, I would probably rework those to use a generic DbEntity<T>: {key: string, value: T} type with methods allowing to switch from RTDB objects ({[key: string]: T}) to more API friendly objects ({key: string ...T}).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+-   Models should be exported in a library so they can be shared between the back-end and the font-end
 
-### `yarn eject`
+## Database structure
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+The realtime database is structured as follow, in order to be able to accomodate several domains in the same database:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+-   Domains:
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+    -   [key: UUID]:
+        -   domain: string
+        -   slots:
+            -   [key: UUID]:
+                -   day: [0-6]
+                -   start: string
+                -   end: string
+                -   maxAttendees: number
+        -   sessions:
+            -   [key: 'YYYY-MM-DD-start-end']:
+                -   date: string
+                -   start: string
+                -   end: string
+                -   code?: string
+                -   maxAttendees: number
+                -   attendees?: string[]
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+-   Users:
 
-## Learn More
+    -   [key: UUID]:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+        -   email: string
+        -   isAdmin: boolean
