@@ -13,7 +13,7 @@ export interface ISession {
     // Max # of attendees
     maxAttendees: number;
     // List of registered attendees (includes the ones on the waitlist)
-    attendees?: string[];
+    attendees: string[];
 }
 
 export interface IDbSession {

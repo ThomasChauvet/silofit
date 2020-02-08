@@ -1,24 +1,22 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { IDbSession } from '../models/Session';
-import { Session } from './Session';
+import { RouteChildrenProps, Link } from 'react-router-dom';
 import './Sessions.css';
 import { Loader } from './Loader';
-import { UserContext } from '../contexts/UserContext';
-import { IUser } from '../models/User';
+import { UserProvider } from '../contexts/UserContext';
+import { Sessions } from './Sessions';
 import { FirebaseContext } from '../contexts/FirebaseContext';
 
-export const Sessions: React.FC = () => {
-    const [sessions, setSessions] = useState<IDbSession[]>([]);
+export const UserSessions: React.FC<RouteChildrenProps<{ userId?: string }>> = props => {
     const [loading, setLoading] = useState<boolean>(true);
-    const user = useContext(UserContext) as IUser;
+    const [user, setUser] = useState();
     const firebaseFunctions = useContext(FirebaseContext);
 
     useEffect(() => {
         try {
             firebaseFunctions
-                ?.httpsCallable('getSessions')({ userId: user.key })
+                ?.httpsCallable('getUser')({ userId: props.match?.params.userId })
                 .then(result => {
-                    setSessions(result.data);
+                    setUser(result.data);
                     setLoading(false);
                 })
                 .catch(e => {
@@ -34,11 +32,17 @@ export const Sessions: React.FC = () => {
     return (
         <div className="main-sessions-body">
             <Loader loading={loading} />
+            {!loading && !user && (
+                <div className="no-user-sessions">
+                    This link is invalid, please <Link to="/">Register</Link> before trying to book a session.
+                </div>
+            )}
             {!loading && user && (
-                <div className="sessions-wrapper">
-                    {sessions.map(session => (
-                        <Session session={session} />
-                    ))}
+                <div className="sessions-container">
+                    <div className="greetings">{user.email}</div>
+                    <UserProvider value={user}>
+                        <Sessions />
+                    </UserProvider>
                 </div>
             )}
         </div>

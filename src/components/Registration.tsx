@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
-import { callFirebaseFunction } from '../services/FirebaseService';
+import React, { useState, useContext } from 'react';
+// import { callFirebaseFunction } from '../services/FirebaseService';
 import { Loader } from './Loader';
 import EmailUtils from '../utils/EmailUtils';
+import { FirebaseContext } from '../contexts/FirebaseContext';
 
 export const Registration: React.FC = () => {
     const [email, setEmail] = useState<string>('');
     const [submitSuccess, setSubmitSuccess] = useState<Boolean>();
     const [error, setError] = useState<String>('');
     const [loading, setLoading] = useState<boolean>(false);
+    const firebaseFunctions = useContext(FirebaseContext);
 
-    /**
-     * Handles form submission
-     * @param {React.FormEvent<HTMLFormElement>} e - The form event
-     */
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
         setError('');
@@ -22,10 +20,6 @@ export const Registration: React.FC = () => {
         }
     };
 
-    /**
-     * Executes the validation rules for all the fields on the form and sets the error state
-     * @returns {boolean} - Whether the form is valid or not
-     */
     const validateForm = (): boolean => {
         if (!email || email.trim() === '') {
             setError('Email is mandatory');
@@ -35,14 +29,11 @@ export const Registration: React.FC = () => {
         return error === '';
     };
 
-    /**
-     * Submits the form to the http api
-     * @returns {boolean} - Whether the form submission was successful or not
-     */
     const submitForm = async (): Promise<boolean> => {
         try {
             setLoading(true);
-            await callFirebaseFunction('generateLink', { email });
+            await firebaseFunctions?.httpsCallable('generateLink')({ email });
+            // await callFirebaseFunction('generateLink', { email });
             setLoading(false);
             return true;
         } catch (e) {

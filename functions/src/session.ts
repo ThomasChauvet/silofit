@@ -50,6 +50,7 @@ export const getSessions = async (data: { userId: string }) => {
                             start: slotDefinition.start,
                             end: slotDefinition.end,
                             maxAttendees: slotDefinition.maxAttendees,
+                            attendees: [],
                         }),
                     );
                 }
@@ -103,6 +104,9 @@ const getSessionInfos = async (
         throw new HttpsError('not-found', `Session with id ${sessionId} does not exist for ${dbDomain.value.domain}`);
     }
 
+    // Make sure attendees list is initiated for manipulations
+    dbSession.value.attendees = dbSession.value.attendees || [];
+
     return {
         dbDomain,
         dbSession,
@@ -110,47 +114,49 @@ const getSessionInfos = async (
     };
 };
 
-export const addAttendee = async (data: { userId: string; sessionId: string }) => {
+export const addAttendee = async (data: { userId: string; sessionId: string }): Promise<IDbSession> => {
     const sessionInfos = await getSessionInfos(data.userId, data.sessionId);
     // Update session attendees list
-    const currentAttendees = sessionInfos.dbSession.value.attendees || [];
+    const session = sessionInfos.dbSession;
+
     // Add user email to attendees list if not already present
-    if (!currentAttendees.includes(sessionInfos.dbUser.value.email)) {
-        currentAttendees.push(sessionInfos.dbUser.value.email);
-        await databaseService.updateSession(sessionInfos.dbDomain.key, sessionInfos.dbSession.key, {
-            ...sessionInfos.dbSession.value,
-            attendees: currentAttendees,
-        });
+    if (!session.value.attendees.includes(sessionInfos.dbUser.value.email)) {
+        session.value.attendees.push(sessionInfos.dbUser.value.email);
+        await databaseService.updateSession(sessionInfos.dbDomain.key, sessionInfos.dbSession.key, session.value);
     }
+    // return the updated session
+    return session;
 };
 
-export const removeAttendee = async (data: { userId: string; sessionId: string }) => {
+export const removeAttendee = async (data: { userId: string; sessionId: string }): Promise<IDbSession> => {
     const sessionInfos = await getSessionInfos(data.userId, data.sessionId);
     // Update session attendees list
-    const currentAttendees = sessionInfos.dbSession.value.attendees || [];
+    const session = sessionInfos.dbSession;
+
     // Remove user email from attendees list if present
-    const idx = currentAttendees.indexOf(sessionInfos.dbUser.value.email);
+    const idx = session.value.attendees.indexOf(sessionInfos.dbUser.value.email);
     if (idx > -1) {
-        currentAttendees.splice(idx, 1);
-        await databaseService.updateSession(sessionInfos.dbDomain.key, sessionInfos.dbSession.key, {
-            ...sessionInfos.dbSession.value,
-            attendees: currentAttendees,
-        });
+        session.value.attendees.splice(idx, 1);
+        await databaseService.updateSession(sessionInfos.dbDomain.key, sessionInfos.dbSession.key, session.value);
     }
+    // return the updated session
+    return session;
 };
 
-export const generateCode = async (data: { userId: string; sessionId: string }) => {
-    const sessionInfos = await getSessionInfos(data.userId, data.sessionId, true);
+export const generateCode = async (data: { userId: string; sessionId: string }): Promise<IDbSession> => {
+    const sessionInfos = await getSessionInfos(data.userId, data.sessionId);
+    // Update session attendees list
+    const session = sessionInfos.dbSession;
+
     // Generate access code for the current session
-    if (!sessionInfos.dbSession.value.code) {
+    if (!session.value.code) {
         // TODO: Check what the proper access code format should be
         // Just using the color generator from the front end test for now ;)
-        const code = Math.floor(Math.random() * 0x1000000)
+        session.value.code = Math.floor(Math.random() * 0x1000000)
             .toString(16)
             .padStart(6, '0');
-        await databaseService.updateSession(sessionInfos.dbDomain.key, sessionInfos.dbSession.key, {
-            ...sessionInfos.dbSession.value,
-            code,
-        });
+        await databaseService.updateSession(sessionInfos.dbDomain.key, sessionInfos.dbSession.key, session.value);
     }
+    // return the updated session
+    return session;
 };
