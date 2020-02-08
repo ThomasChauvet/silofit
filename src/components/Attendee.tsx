@@ -38,11 +38,18 @@ export const Attendee: React.FC<IAttendeeProps> = props => {
 
     const handleCancellation = (): void => {
         setLoading(true);
+
+        // Self cancelation or admin cancelation?
+        const data: any = {
+            userId: user.key,
+            sessionId: session.key,
+        };
+        if (user.isAdmin) {
+            data.email = props.attendee;
+        }
+
         firebaseFunctions
-            ?.httpsCallable('cancelBooking')({
-                userId: user.key,
-                sessionId: session.key,
-            })
+            ?.httpsCallable('cancelBooking')(data)
             .then(result => {
                 sessionContext.refreshSession(result.data);
                 setLoading(false);

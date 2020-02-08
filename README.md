@@ -20,7 +20,9 @@
 
 -   I am not entirely happy with the models for the functions. In a "real life" scenario, I would probably rework those to use a generic DbEntity<T>: {key: string, value: T} type with methods allowing to switch from RTDB objects ({[key: string]: T}) to more API friendly objects ({key: string ...T}).
 
--   Models should be exported in a library so they can be shared between the back-end and the font-end
+-   Models should be exported in a library so they can be shared between the back-end and the font-end.
+
+-   I spent some time trying to set up the back-end unit tests, but could not get them to work :(
 
 ## Database structure
 

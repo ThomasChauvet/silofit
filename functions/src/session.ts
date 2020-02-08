@@ -128,13 +128,20 @@ export const addAttendee = async (data: { userId: string; sessionId: string }): 
     return session;
 };
 
-export const removeAttendee = async (data: { userId: string; sessionId: string }): Promise<IDbSession> => {
-    const sessionInfos = await getSessionInfos(data.userId, data.sessionId);
+export const removeAttendee = async (data: {
+    userId: string;
+    sessionId: string;
+    email?: string;
+}): Promise<IDbSession> => {
+    // Only admins can specify a different email to cancel
+    const sessionInfos = await getSessionInfos(data.userId, data.sessionId, data.email !== undefined);
     // Update session attendees list
     const session = sessionInfos.dbSession;
 
+    const attendeeEmail = data.email || sessionInfos.dbUser.value.email;
+
     // Remove user email from attendees list if present
-    const idx = session.value.attendees.indexOf(sessionInfos.dbUser.value.email);
+    const idx = session.value.attendees.indexOf(attendeeEmail);
     if (idx > -1) {
         session.value.attendees.splice(idx, 1);
         await databaseService.updateSession(sessionInfos.dbDomain.key, sessionInfos.dbSession.key, session.value);
