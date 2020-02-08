@@ -37,8 +37,13 @@ export const Session: React.FC<ISessionsProps> = props => {
         return dateFormat(date, 'fullDate');
     };
 
+    const refreshSession = (newSession: IDbSession): void => {
+        setSession(newSession);
+        // TODO: FIXME Temporary ugly fix; without it only 1 button can be clicked (and could not find why)
+        window.location.reload();
+    };
+
     useEffect(() => {
-        console.log('refreshing session');
         const attendees = session.value.attendees || [];
         // Manage attendees slots from session definition
         const spots = new Array<string | null>(session.value.maxAttendees)
@@ -47,10 +52,10 @@ export const Session: React.FC<ISessionsProps> = props => {
             .map((value, index) => attendees[index] || value);
         setBookingSpots(spots);
         setWaitingList(attendees.slice(session.value.maxAttendees, attendees.length));
-    });
+    }, [session]);
 
     return (
-        <SessionProvider value={{ session, refreshSession: setSession }}>
+        <SessionProvider value={{ session, refreshSession }}>
             <div className="session-wrapper">
                 <div className="session-description">
                     <div>{formatDate(session.value.date)}</div>

@@ -19,43 +19,38 @@ export const Attendee: React.FC<IAttendeeProps> = props => {
     const firebaseFunctions = useContext(FirebaseContext);
 
     useEffect(() => {
-        // setAttending((props.session.value.attendees || []).includes(props.user.email));
         setAttending((session.value.attendees || []).includes(user.email));
-    });
+    }, [session]);
 
-    const handleBooking = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-        e.preventDefault();
-        try {
-            setLoading(true);
-            firebaseFunctions
-                ?.httpsCallable('addBooking')({ userId: user.key, sessionId: session.key })
-                .then(result => {
-                    sessionContext.refreshSession(result.data);
-                    setLoading(false);
-                });
-        } catch (e) {
-            console.error(e);
-            setLoading(false);
-        }
+    const handleBooking = (): void => {
+        setLoading(true);
+        firebaseFunctions
+            ?.httpsCallable('addBooking')({ userId: user.key, sessionId: session.key })
+            .then(result => {
+                sessionContext.refreshSession(result.data);
+                setLoading(false);
+            })
+            .catch(e => {
+                console.error(e);
+                setLoading(false);
+            });
     };
 
-    const handleCancellation = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-        e.preventDefault();
-        try {
-            setLoading(true);
-            firebaseFunctions
-                ?.httpsCallable('cancelBooking')({
-                    userId: user.key,
-                    sessionId: session.key,
-                })
-                .then(result => {
-                    sessionContext.refreshSession(result.data);
-                    setLoading(false);
-                });
-        } catch (e) {
-            console.error(e);
-            setLoading(false);
-        }
+    const handleCancellation = (): void => {
+        setLoading(true);
+        firebaseFunctions
+            ?.httpsCallable('cancelBooking')({
+                userId: user.key,
+                sessionId: session.key,
+            })
+            .then(result => {
+                sessionContext.refreshSession(result.data);
+                setLoading(false);
+            })
+            .catch(e => {
+                console.error(e);
+                setLoading(false);
+            });
     };
 
     return (
@@ -71,9 +66,11 @@ export const Attendee: React.FC<IAttendeeProps> = props => {
                 </div>
             )}
             {!props.attendee && !attending && (
-                <button onClick={handleBooking} disabled={loading}>
-                    Book now
-                </button>
+                <div>
+                    <button onClick={handleBooking} disabled={loading}>
+                        Book now
+                    </button>
+                </div>
             )}
         </div>
     );

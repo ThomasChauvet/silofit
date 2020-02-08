@@ -34,20 +34,18 @@ export const AccessCode: React.FC = () => {
         }
     });
 
-    const handleCodeGeneration = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-        e.preventDefault();
-        try {
-            setLoading(true);
-            firebaseFunctions
-                ?.httpsCallable('generateAccessCode')({ userId: user.key, sessionId: session.key })
-                .then(result => {
-                    sessionContext.refreshSession(result.data);
-                    setLoading(false);
-                });
-        } catch (e) {
-            console.error(e);
-            setLoading(false);
-        }
+    const handleCodeGeneration = (): void => {
+        setLoading(true);
+        firebaseFunctions
+            ?.httpsCallable('generateAccessCode')({ userId: user.key, sessionId: session.key })
+            .then(result => {
+                sessionContext.refreshSession(result.data);
+                setLoading(false);
+            })
+            .catch(e => {
+                console.error(e);
+                setLoading(false);
+            });
     };
 
     return (
