@@ -84,7 +84,9 @@ export const Session: React.FC<ISessionsProps> = props => {
                                     showBookingButton={index <= bookingSpots.findIndex(entry => !entry)}
                                 />
                             ))}
-                            {waitList.length > 0 && <WaitList list={waitList} />}
+                            {(session.value.attendees || []).length >= session.value.maxAttendees && (
+                                <WaitList list={waitList} />
+                            )}
                         </div>
                         <div className="session-access-code">
                             <AccessCode />
