@@ -9,14 +9,14 @@ import { FirebaseContext } from '../contexts/FirebaseContext';
 export const UserSessions: React.FC<RouteChildrenProps<{ userId?: string }>> = props => {
     const [loading, setLoading] = useState<boolean>(true);
     const [user, setUser] = useState();
-    const firebaseFunctions = useContext(FirebaseContext);
+    const firebaseService = useContext(FirebaseContext);
 
     useEffect(() => {
         try {
-            firebaseFunctions
-                ?.httpsCallable('getUser')({ userId: props.match?.params.userId })
+            firebaseService
+                ?.getUser(props.match?.params.userId as string)
                 .then(result => {
-                    setUser(result.data);
+                    setUser(result);
                     setLoading(false);
                 })
                 .catch(e => {

@@ -11,17 +11,15 @@ export const Sessions: React.FC = () => {
     const [sessions, setSessions] = useState<IDbSession[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const user = useContext(UserContext) as IUser;
-    const firebaseFunctions = useContext(FirebaseContext);
+    const firebaseService = useContext(FirebaseContext);
 
     useEffect(() => {
-        console.log(`Fetching all sessions`);
         try {
-            firebaseFunctions
-                ?.httpsCallable('getSessions')({ userId: user.key })
+            firebaseService
+                ?.getSessions(user.key)
                 .then(result => {
-                    setSessions(result.data);
+                    setSessions(result);
                     setLoading(false);
-                    console.log(`Done fetching all sessions`);
                 })
                 .catch(e => {
                     console.error(e);

@@ -22,6 +22,8 @@
 
 -   I spent some time trying to set up the back-end unit tests, but could not get them to work :(
 
+-   Improve error management to display clean information to the end user.
+
 ## Database structure
 
 The realtime database is structured as follow, in order to be able to accomodate several domains in the same database:

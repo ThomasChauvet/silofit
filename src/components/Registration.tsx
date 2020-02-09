@@ -9,7 +9,7 @@ export const Registration: React.FC = () => {
     const [submitSuccess, setSubmitSuccess] = useState<Boolean>();
     const [error, setError] = useState<String>('');
     const [loading, setLoading] = useState<boolean>(false);
-    const firebaseFunctions = useContext(FirebaseContext);
+    const firebaseService = useContext(FirebaseContext);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
@@ -32,8 +32,7 @@ export const Registration: React.FC = () => {
     const submitForm = async (): Promise<boolean> => {
         try {
             setLoading(true);
-            await firebaseFunctions?.httpsCallable('generateLink')({ email });
-            // await callFirebaseFunction('generateLink', { email });
+            await firebaseService?.generateLink(email);
             setLoading(false);
             return true;
         } catch (e) {

@@ -14,11 +14,10 @@ export const WaitList: React.FC<IWaitListProps> = props => {
     const [showContent, setShowContent] = useState<Boolean>(false);
     const [waitingRank, setWaitingRank] = useState<number>(0);
     const user = useContext(UserContext) as IUser;
-    const firebaseFunctions = useContext(FirebaseContext);
+    const firebaseService = useContext(FirebaseContext);
     const sessionContext = useContext(SessionContext);
 
     useEffect(() => {
-        console.log(`Rendering waitlist for session ${sessionContext.session?.key}`);
         // No need to show anything if the slots are not filled yet
         setShowContent(props.list.length > 0);
         // Check if a connected regular user is already on the waiting list
@@ -26,20 +25,22 @@ export const WaitList: React.FC<IWaitListProps> = props => {
     });
 
     const handleBooking = (): void => {
-        console.log(`Adding ${user.email} to waitlist for session ${sessionContext.session?.key}`);
         setLoading(true);
-        firebaseFunctions
-            ?.httpsCallable('addBooking')({ userId: user.key, sessionId: sessionContext.session?.key })
-            .then(result => {
-                console.log(`Refreshing session ${sessionContext.session?.key} after waitlist`);
-                sessionContext.refreshSession(result.data);
-                setLoading(false);
-                console.log(`Added ${user.email} to waitlist for session ${sessionContext.session?.key}`);
-            })
-            .catch(e => {
-                console.error(e);
-                setLoading(false);
-            });
+        try {
+            firebaseService
+                ?.addBooking(sessionContext.session?.key as string, user.key)
+                .then(result => {
+                    sessionContext.refreshSession(result);
+                    setLoading(false);
+                })
+                .catch(e => {
+                    console.error(e);
+                    setLoading(false);
+                });
+        } catch (e) {
+            console.error(e);
+            setLoading(false);
+        }
     };
 
     return (

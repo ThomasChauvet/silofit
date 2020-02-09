@@ -7,10 +7,11 @@ import { Registration } from './components/Registration';
 import { UserSessions } from './components/UserSessions';
 import { FirebaseContext } from './contexts/FirebaseContext';
 import { Loader } from './components/Loader';
+import { FirebaseService } from './services/FireBaseService';
 
 const App: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
-    const [functions, setFunctions] = useState<firebase.functions.Functions | null>(null);
+    const [firebaseService, setFirebaseService] = useState<FirebaseService>();
 
     const fetchConfig = async () => {
         // Dynamically load firebase config
@@ -22,7 +23,7 @@ const App: React.FC = () => {
     useEffect(() => {
         fetchConfig().then(config => {
             firebase.initializeApp(config);
-            setFunctions(firebase.functions());
+            setFirebaseService(new FirebaseService(firebase.functions()));
             setLoading(false);
         });
     }, []);
@@ -33,7 +34,7 @@ const App: React.FC = () => {
                 <AppHeader />
                 <Loader loading={loading} />
                 {!loading && (
-                    <FirebaseContext.Provider value={functions}>
+                    <FirebaseContext.Provider value={firebaseService}>
                         <Switch>
                             <Route path="/" exact component={Registration} />
                             <Route path="/:userId" exact component={UserSessions} />

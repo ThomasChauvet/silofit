@@ -14,11 +14,10 @@ export const AccessCode: React.FC = () => {
     const [accessCode, setAccessCode] = useState<IAccessCode>({ displayCode: 'not ready', extraClassName: '' });
     const [loading, setLoading] = useState<boolean>(false);
     const user = useContext(UserContext) as IUser;
-    const firebaseFunctions = useContext(FirebaseContext);
+    const firebaseService = useContext(FirebaseContext);
     const sessionContext = useContext(SessionContext);
 
     useEffect(() => {
-        console.log(`Render access code for session ${sessionContext.session?.key}`);
         // If an access code is available, check if the user is an attendee
         const code = sessionContext.session?.value.code;
         if (code) {
@@ -34,20 +33,22 @@ export const AccessCode: React.FC = () => {
     }, []);
 
     const handleCodeGeneration = (): void => {
-        console.log(`Generate access code for session ${sessionContext.session?.key}`);
         setLoading(true);
-        firebaseFunctions
-            ?.httpsCallable('generateAccessCode')({ userId: user.key, sessionId: sessionContext.session?.key })
-            .then(result => {
-                console.log(`Refreshing session ${sessionContext.session?.key} after code generation`);
-                sessionContext.refreshSession(result.data);
-                setLoading(false);
-                console.log(`Access code generation done.`);
-            })
-            .catch(e => {
-                console.error(e);
-                setLoading(false);
-            });
+        try {
+            firebaseService
+                ?.generateAccessCode(sessionContext.session?.key as string, user.key)
+                .then(result => {
+                    sessionContext.refreshSession(result);
+                    setLoading(false);
+                })
+                .catch(e => {
+                    console.error(e);
+                    setLoading(false);
+                });
+        } catch (e) {
+            console.error(e);
+            setLoading(false);
+        }
     };
 
     return (

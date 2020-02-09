@@ -13,51 +13,44 @@ export const Attendee: React.FC<IAttendeeProps> = props => {
     const [loading, setLoading] = useState<boolean>(false);
     const [attending, setAttending] = useState<boolean>(false);
     const user = useContext(UserContext) as IUser;
-    const firebaseFunctions = useContext(FirebaseContext);
+    const firebaseService = useContext(FirebaseContext);
     const sessionContext = useContext(SessionContext);
 
     useEffect(() => {
-        console.log(`Rendering ${user.email} attendance for session ${sessionContext.session?.key}`);
         setAttending((sessionContext.session?.value.attendees || []).includes(user.email));
     }, []);
 
     const handleBooking = (): void => {
-        console.log(`Adding ${user.email} attendance for session ${sessionContext.session?.key}`);
         setLoading(true);
-        firebaseFunctions
-            ?.httpsCallable('addBooking')({ userId: user.key, sessionId: sessionContext.session?.key })
-            .then(result => {
-                console.log(`Refreshing session ${sessionContext.session?.key} after booking`);
-                sessionContext.refreshSession(result.data);
-                setLoading(false);
-                console.log(`Added ${user.email} attendance for session ${sessionContext.session?.key}`);
-            })
-            .catch(e => {
-                console.error(e);
-                setLoading(false);
-            });
+        try {
+            firebaseService
+                ?.addBooking(sessionContext.session?.key as string, user.key)
+                .then(result => {
+                    sessionContext.refreshSession(result);
+                    setLoading(false);
+                })
+                .catch(e => {
+                    console.error(e);
+                    setLoading(false);
+                });
+        } catch (e) {
+            console.error(e);
+            setLoading(false);
+        }
     };
 
     const handleCancellation = (): void => {
         setLoading(true);
 
-        // Self cancelation or admin cancelation?
-        const data: any = {
-            userId: user.key,
-            sessionId: sessionContext.session?.key,
-        };
-        if (user.isAdmin) {
-            data.email = props.attendee;
-        }
-
-        console.log(`Cancelling ${data.email} attendance for session ${sessionContext.session?.key}`);
-        firebaseFunctions
-            ?.httpsCallable('cancelBooking')(data)
+        firebaseService
+            ?.cancelBooking(
+                sessionContext.session?.key as string,
+                user.key,
+                user.isAdmin ? (props.attendee as string) : undefined,
+            )
             .then(result => {
-                console.log(`Refreshing session ${sessionContext.session?.key} after cancellation`);
-                sessionContext.refreshSession(result.data);
+                sessionContext.refreshSession(result);
                 setLoading(false);
-                console.log(`Cancelled ${user.email} attendance for session ${sessionContext.session?.key}`);
             })
             .catch(e => {
                 console.error(e);

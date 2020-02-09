@@ -19,10 +19,8 @@ export const Session: React.FC<ISessionsProps> = props => {
     const [session, setSession] = useState<IDbSession>();
 
     const fetchSession = async (updatedSession: IDbSession) => {
-        console.log(`Fetching session ${props.session.key}`);
         setLoading(true);
         try {
-            console.log(`Session ${props.session.key} retrieved, preparing rendering`);
             setSession(updatedSession);
             const attendees = updatedSession.value.attendees || [];
             // Manage attendees slots from session definition
@@ -33,7 +31,6 @@ export const Session: React.FC<ISessionsProps> = props => {
             setBookingSpots(spots);
             setWaitingList(attendees.slice(updatedSession.value.maxAttendees, attendees.length));
             setLoading(false);
-            console.log(`Session ${props.session.key} rendered`);
         } catch (e) {
             console.log(e);
             setLoading(false);
@@ -62,9 +59,7 @@ export const Session: React.FC<ISessionsProps> = props => {
     };
 
     useEffect(() => {
-        console.log(`Start useEffect session ${props.session.key}`);
         fetchSession(props.session);
-        console.log(`End useEffect session ${props.session.key}`);
     }, []);
 
     return (
