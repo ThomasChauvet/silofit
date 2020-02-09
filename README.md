@@ -16,8 +16,6 @@
 
 ## Things to improve
 
--   At the moment, I have an odd behavior in the front-end that I was not able to fix: only 1 session action button can be clicked, after which no button is active any longer (the onClick event does not even get called and the page freezes). Right now, I implemented an ugly hack which consists in a full page refresh, which is definitely not what we want to see. I suspect that this is probably due to the organisation of my react components.
-
 -   I am not entirely happy with the models for the functions. In a "real life" scenario, I would probably rework those to use a generic DbEntity<T>: {key: string, value: T} type with methods allowing to switch from RTDB objects ({[key: string]: T}) to more API friendly objects ({key: string ...T}).
 
 -   Models should be exported in a library so they can be shared between the back-end and the font-end.

@@ -14,12 +14,14 @@ export const Sessions: React.FC = () => {
     const firebaseFunctions = useContext(FirebaseContext);
 
     useEffect(() => {
+        console.log(`Fetching all sessions`);
         try {
             firebaseFunctions
                 ?.httpsCallable('getSessions')({ userId: user.key })
                 .then(result => {
                     setSessions(result.data);
                     setLoading(false);
+                    console.log(`Done fetching all sessions`);
                 })
                 .catch(e => {
                     console.error(e);

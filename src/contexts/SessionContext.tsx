@@ -2,14 +2,12 @@ import { createContext } from 'react';
 import { IDbSession } from '../models/Session';
 
 export interface ISessionContext {
-    session: IDbSession | null;
+    session?: IDbSession;
     refreshSession: (session: IDbSession) => void | Promise<void>;
+    showBookingButton: boolean;
 }
 
 export const SessionContext = createContext<ISessionContext>({
-    session: null,
     refreshSession: () => {},
+    showBookingButton: true,
 });
-
-export const SessionProvider = SessionContext.Provider;
-export const SessionConsumer = SessionContext.Consumer;
