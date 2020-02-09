@@ -66,7 +66,7 @@ export const Session: React.FC<ISessionsProps> = props => {
         <div>
             <Loader loading={loading} />
             {!loading && session && (
-                <SessionContext.Provider value={{ session, refreshSession: fetchSession, showBookingButton: true }}>
+                <SessionContext.Provider value={{ session, refreshSession: fetchSession }}>
                     <div className="session-wrapper">
                         <div className="session-description">
                             <div>{formatDate(session.value.date)}</div>
@@ -75,8 +75,12 @@ export const Session: React.FC<ISessionsProps> = props => {
                             </div>
                         </div>
                         <div className="session-attendees">
-                            {bookingSpots.map(attendee => (
-                                <Attendee attendee={attendee} />
+                            {bookingSpots.map((attendee, index) => (
+                                <Attendee
+                                    attendee={attendee}
+                                    // Only show Book now button for the first available slot
+                                    showBookingButton={index <= bookingSpots.findIndex(entry => !entry)}
+                                />
                             ))}
                             {waitList.length > 0 && <WaitList list={waitList} />}
                         </div>

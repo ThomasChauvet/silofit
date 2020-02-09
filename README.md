@@ -10,6 +10,8 @@
 
 -   Currently, all users with an email address containing _+admin_ are considered admins.
 
+-   "Book now" button is only displayed in the first available slot per session as it is always the first spot that gets assigned.
+
 -   Access codes are generated directly from the application, using the _Generate access code_ button with an admin account.
 
 -   The waitlist for a given session is calculated on the fly, meaning that it can be adjusted real-time just by changing the _maxAttendees_ value for a given session.

@@ -7,6 +7,7 @@ import { SessionContext } from '../contexts/SessionContext';
 
 interface IAttendeeProps {
     attendee: string | null;
+    showBookingButton: boolean;
 }
 
 export const Attendee: React.FC<IAttendeeProps> = props => {
@@ -70,7 +71,7 @@ export const Attendee: React.FC<IAttendeeProps> = props => {
                     )}
                 </div>
             )}
-            {!props.attendee && !attending && (
+            {!props.attendee && !attending && props.showBookingButton && (
                 <div>
                     <button onClick={handleBooking} disabled={loading}>
                         Book now

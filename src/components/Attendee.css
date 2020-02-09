@@ -1,4 +1,5 @@
 .attendee {
     border: 1px solid darkgrey;
     padding: 1em;
+    min-height: 1.5em;
 }
