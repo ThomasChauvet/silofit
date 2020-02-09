@@ -114,6 +114,12 @@ const getSessionInfos = async (
     };
 };
 
+export const getSession = async (data: { userId: string; sessionId: string }): Promise<IDbSession> => {
+    const sessionInfos = await getSessionInfos(data.userId, data.sessionId);
+    // return the session
+    return sessionInfos.dbSession;
+};
+
 export const addAttendee = async (data: { userId: string; sessionId: string }): Promise<IDbSession> => {
     const sessionInfos = await getSessionInfos(data.userId, data.sessionId);
     // Update session attendees list
