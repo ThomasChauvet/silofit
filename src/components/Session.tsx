@@ -55,7 +55,9 @@ export const Session: React.FC<ISessionsProps> = props => {
     };
 
     const formatDate = (date: string): string => {
-        return dateFormat(date, 'fullDate');
+        // Date is returned as YYYY-MM-DD, but just formatting it might result on a day difference depending on the server timezone
+        // https://stackoverflow.com/questions/7556591/is-the-javascript-date-object-always-one-day-off
+        return dateFormat(date.replace(/-/g, '/'), 'fullDate');
     };
 
     useEffect(() => {
